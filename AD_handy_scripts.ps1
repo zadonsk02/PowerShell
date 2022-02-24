@@ -35,7 +35,7 @@ Get-ADUSer -Filter *
 
 #Edit multiple users with an imported CSV:
 Import-Csv "C:\Temp\Users.csv" |
-  % {If($_.mail -like '*@adatum.com')
+  ForEach-Object {If($_.mail -like '*@adatum.com')
   { Set-ADUser $_.SamAccountName
     -Add @{extensionAttribute4 = "M365"}}}
     
