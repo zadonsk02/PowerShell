@@ -1,10 +1,10 @@
 ﻿function Add-ADUser{
-
-$UserList = Import-Csv -Path 'C:\Temp\NewHires.csv' 
-
-foreach ($User in $UserList) {
-
-     $Attributes = @{
+  [cmdletbinding()]
+  Param (
+    [string]$UserList = Import-Csv -Path 'C:\Temp\NewHires.csv'
+  )
+  foreach ($User in $UserList) {   
+    $Attributes = @{
 
         Enabled = $true
         ChangePasswordAtLogon = $true
@@ -29,6 +29,6 @@ foreach ($User in $UserList) {
         
      }
 
-    # New-ADUser @Attributes
+    New-ADUser @Attributes
   }         
 } # function Add-ADUser

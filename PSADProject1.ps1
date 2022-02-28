@@ -10,7 +10,9 @@
   The At symbol tells PowerShell that you are passing a collection of values, instead of a single value.
 
   .EXAMPLE
+
   .PARAMETER 
+
   .NOTES
   General Notes
     Created by:    Andrew Konigsberg
@@ -47,6 +49,6 @@
        UserPrincipalName = ($User.upn)
        SamAccountName = ($User.firstname+" "+$User.lastname)
        }
-     New-ADUser @Attributes #Create user account
+     Add-ADUser @Attributes #Call function Add-ADUser to create user account
   }
 }#function Add-ADUser
