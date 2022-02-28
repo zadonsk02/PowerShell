@@ -1,4 +1,4 @@
-﻿function Add-ADUser{
+﻿function Add-NewADUser{
   <#
   .SYNOPSIS
   .DESCRIPTION
@@ -20,21 +20,36 @@
   #>
   [cmdletbinding()]
   Param (
-    [string]$FileName = "E:\NewHires.csv"
+    [string]$FileName = 'E:\NewHires.csv'
   )
   $UserList = Import-Csv -Path $FileName
-  
+
+  $DepartmentNames = $Users.Department | Select-Object -Unique # Get an array of all of the Departments that are needed
+  $CurrentOUNames = (Get-ADOrganizationalUnit -Filter *).Name # Get an array of OU names
+  $CurrentGroupNames = (Get-ADGroup -Filter *).Name # Get an array of Group names
+  foreach ($DepartmentName in $DepartmentNames) { # Checking to see if the OUs and Groups are already created
+    if ($DepartmentName -notin $CurrentOUNames) {
+      New-ADOrganizationalUnit -Name $DepartmentName -Path 'dc=adatum,dc=com'
+    }
+    if ($DepartmentName -notin $CurrentGroupNames) {
+      New-ADGroup -GroupScope Global -Name $DepartmentName -Path "ou=$DepartmentName,dc=adatum,dc=com"
+    }
+  }
+    
   $UserTotalCount = $Users.Count
-    $CurrentUserCount = 0  
+  $CurrentUserCount = 0  
 
   foreach ($User in $UserList) {   
     #Print to screen user creation progress.
     $CurrentUserCount++
     Write-Progress -Activity "Creating Users" -PercentComplete ($CurrentUserCount/$UserTotalCount*100) -CurrentOperation  "Creating User: $($User.FirstName + ' ' + $User.LastName)"
-
+    $SamAccountName = ($User.firstname+" "+$User.lastname)
+    $Name = ($User.firstname+" "+$User.lastname)
+    $AccountPassword = $User.password | ConvertTo-SecureString -AsPlainText -Force
+   
     $Attributes = @{
-       #Enabled = $true
-       #ChangePasswordAtLogon = $false
+       Enabled = $true
+       ChangePasswordAtLogon = $false
        Path = "OU=Test,DC=adatum,DC=com"
        GivenName = $User.firstname
        Surname = $User.lastname
@@ -42,11 +57,13 @@
        StreetAddress = $User.streetaddress
        Department = $User.department        
        Office = $User.officename
-       AccountPassword = $User.password | ConvertTo-SecureString -AsPlainText -Force
-       Name = ($User.firstname+" "+$User.lastname)
+       AccountPassword = $AccountPassword
+       Name = $Name
        UserPrincipalName = ($User.upn)
-       SamAccountName = ($User.firstname+" "+$User.lastname)
+       SamAccountName = $SamAccountName
        }
-     New-ADUser @Attributes #Create user account
+    New-ADUser @Attributes #Create user account
+    $NewUser = Get-ADUser -Identity $SamAccountName
+    Add-ADGroupMember -Identity $User.department -Members $NewUser  # Adding the new user to the relevant group
   }
 }#function Add-ADUser
