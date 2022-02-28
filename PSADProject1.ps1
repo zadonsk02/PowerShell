@@ -1,4 +1,4 @@
-﻿function Add-NewADUser{
+﻿function Add-ADUser{
   <#
   .SYNOPSIS
   .DESCRIPTION
@@ -24,7 +24,7 @@
   )
   $UserList = Import-Csv -Path $FileName
 
-  $DepartmentNames = $Users.Department | Select-Object -Unique # Get an array of all of the Departments that are needed
+  $DepartmentNames = $UserList.Department | Select-Object -Unique # Get an array of all of the Departments that are needed
   $CurrentOUNames = (Get-ADOrganizationalUnit -Filter *).Name # Get an array of OU names
   $CurrentGroupNames = (Get-ADGroup -Filter *).Name # Get an array of Group names
   foreach ($DepartmentName in $DepartmentNames) { # Checking to see if the OUs and Groups are already created
@@ -36,14 +36,14 @@
     }
   }
     
-  $UserTotalCount = $Users.Count
+  $UserTotalCount = $UserList.Count
   $CurrentUserCount = 0  
 
   foreach ($User in $UserList) {   
     #Print to screen user creation progress.
     $CurrentUserCount++
     Write-Progress -Activity "Creating Users" -PercentComplete ($CurrentUserCount/$UserTotalCount*100) -CurrentOperation  "Creating User: $($User.FirstName + ' ' + $User.LastName)"
-    $SamAccountName = ($User.firstname+" "+$User.lastname)
+    $SamAccountName = ($User.firstname.SubString(0,1)+" "+$User.lastname)
     $Name = ($User.firstname+" "+$User.lastname)
     $AccountPassword = $User.password | ConvertTo-SecureString -AsPlainText -Force
    
