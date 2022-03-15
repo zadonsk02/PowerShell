@@ -1,6 +1,7 @@
-﻿function Add-ADUserFile{
+﻿function New-ADUserFile{
   <#
   .SYNOPSIS
+  Creates an Active Directory user or users reading from an input csv file.
   .DESCRIPTION
   Each New User is described in a structure known as a splatted variable. 
   Splatting is a method of passing a collection of parameter values to a command as a unit. 
@@ -62,7 +63,7 @@
        UserPrincipalName = ($User.upn)
        SamAccountName = $SamAccountName
        }
-    Add-ADUserFile @Attributes #Create user accounts
+    New-ADUser @Attributes #Create user account
     $NewUser = Get-ADUser -Identity $SamAccountName
     Add-ADGroupMember -Identity $User.department -Members $NewUser  # Adding the new user to the relevant group
   }
