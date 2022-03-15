@@ -5,3 +5,4 @@ Clear-DnsClientCache
 #View Access Control List
 Get-Acl -Path C:\Temp | Format-Table
 (Get-Acl -Path C:\Temp).access | Format-Table
+

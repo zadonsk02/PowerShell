@@ -1,4 +1,4 @@
-﻿function Add-ADUser{
+﻿function Add-ADUserFile{
   <#
   .SYNOPSIS
   .DESCRIPTION
@@ -15,7 +15,7 @@
   General Notes
     Created by:    Andrew Konigsberg
     Created on:    28 Feb 2022
-    Last Modified: 28 Feb 2022
+    Last Modified: 15 Mar 2022
 
   #>
   [cmdletbinding()]
@@ -62,8 +62,8 @@
        UserPrincipalName = ($User.upn)
        SamAccountName = $SamAccountName
        }
-    New-ADUser @Attributes #Create user account
+    Add-ADUserFile @Attributes #Create user accounts
     $NewUser = Get-ADUser -Identity $SamAccountName
     Add-ADGroupMember -Identity $User.department -Members $NewUser  # Adding the new user to the relevant group
   }
-}#function Add-ADUser
+}#function Add-ADUserFile
